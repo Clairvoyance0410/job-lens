@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api, confirmHeaders, unwrap } from '@/shared/api/client';
+import { api, confirmHeaders, unwrap, updateHeaders } from '@/shared/api/client';
 import type { components } from '@/shared/api/schema';
 
 type FeedbackCreate = components['schemas']['FeedbackCreate'];
+type PromptOverrideWrite = components['schemas']['PromptOverrideWrite'];
 
 /** 读取提交快照。父任务 version 经 ETag/task_version 投影，审核时用作 If-Match。 */
 export function useSubmission(submissionId: string) {
@@ -49,6 +50,59 @@ export function useFeedback(submissionId: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['submission', submissionId] });
       // 审核会推进/回退任务状态，刷新个案列表与工作台「待反馈」计数。
+      qc.invalidateQueries({ queryKey: ['cases'] });
+      qc.invalidateQueries({ queryKey: ['dashboard'] });
+    },
+  });
+}
+
+/** 读取单个训练任务（固定内容 + 进度 + 提示等级覆盖）。 */
+export function useTask(taskId: string) {
+  return useQuery({
+    queryKey: ['task', taskId],
+    queryFn: async ({ signal }) =>
+      unwrap(
+        await api.GET('/tasks/{task_id}', {
+          params: { path: { task_id: taskId } },
+          signal,
+        }),
+      ),
+  });
+}
+
+/** 调整任务文字提示等级：PUT + If-Match（put_headers）。 */
+export function usePromptOverride(taskId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ version, body }: { version: number; body: PromptOverrideWrite }) =>
+      unwrap(
+        await api.PUT('/tasks/{task_id}/prompt-override', {
+          params: { path: { task_id: taskId }, header: updateHeaders(version) },
+          body,
+        }),
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['task', taskId] });
+    },
+  });
+}
+
+/** 辅导员取消任务：POST 命令 + If-Match + 幂等键（command_headers）。 */
+export function useCancelTask(taskId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ version, reason }: { version: number; reason: string }) =>
+      unwrap(
+        await api.POST('/tasks/{task_id}/actions', {
+          params: {
+            path: { task_id: taskId },
+            header: confirmHeaders(version, crypto.randomUUID()),
+          },
+          body: { action: 'cancel', reason },
+        }),
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['task', taskId] });
       qc.invalidateQueries({ queryKey: ['cases'] });
       qc.invalidateQueries({ queryKey: ['dashboard'] });
     },

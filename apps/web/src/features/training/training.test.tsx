@@ -4,7 +4,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, expect, it } from 'vitest';
-import { FeedbackPage } from './public';
+import { FeedbackPage, CounselorTaskPage } from './public';
 
 const server = setupServer();
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -107,4 +107,58 @@ it('shows the read-only result when feedback already exists', async () => {
   renderPage();
   expect(await screen.findByRole('heading', { name: '审核结论（已提交）' })).toBeInTheDocument();
   expect(screen.getByText('做得不错')).toBeInTheDocument();
+});
+
+const task = {
+  id: 'task-1',
+  case_id: 'case-1',
+  learner_id: 'l-1',
+  title: '收银流程训练',
+  revision: {
+    goal: '掌握收银流程',
+    steps: [
+      { id: 'step-1', position: 1, instruction: '认识收银机', media_ids: [], estimated_seconds: 720, evidence_required: true },
+      { id: 'step-2', position: 2, instruction: '完成一次收款', media_ids: [], estimated_seconds: 900, evidence_required: true },
+    ],
+    reminder: { speech_enabled: true, vibration_enabled: false, prompt_level: 2 },
+    id: 'rev-1',
+    plan_id: 'plan-1',
+    revision_no: 2,
+    state: 'published',
+    version: 2,
+    published_at: '2026-09-19T10:00:00Z',
+  },
+  status: 'in_progress',
+  due_on: '2026-09-25',
+  current_step_id: 'step-2',
+  progress: [
+    { step_id: 'step-1', status: 'completed', attachment_ids: [] },
+    { step_id: 'step-2', status: 'in_progress', attachment_ids: [] },
+  ],
+  prompt_override: null,
+  version: 5,
+};
+
+function renderTask() {
+  const router = createMemoryRouter(
+    [{ path: '/counselor/tasks/:id', element: <CounselorTaskPage /> }],
+    { initialEntries: ['/counselor/tasks/task-1'] },
+  );
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  render(
+    <QueryClientProvider client={client}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>,
+  );
+}
+
+it('shows task progress and prompt-override control', async () => {
+  server.use(http.get('*/api/v1/tasks/task-1', () => HttpResponse.json(task)));
+  renderTask();
+  expect(await screen.findByRole('heading', { name: '任务详情' })).toBeInTheDocument();
+  expect(screen.getByText('认识收银机')).toBeInTheDocument();
+  expect(screen.getByText('完成一次收款')).toBeInTheDocument();
+  // 说明为空时不可保存提示等级。
+  expect(screen.getByRole('button', { name: '保存提示等级' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: '取消任务' })).toBeInTheDocument();
 });

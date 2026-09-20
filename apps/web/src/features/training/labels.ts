@@ -36,3 +36,21 @@ export const TAG_OPTIONS: { value: FeedbackTag; label: string }[] = [
   { value: 'retake_required', label: '需重新提交' },
   { value: 'other', label: '其他' },
 ];
+
+export type StepStatus = components['schemas']['StepProgress']['status'];
+export const STEP_STATUS_LABELS: Record<StepStatus, string> = {
+  pending: '待完成',
+  in_progress: '进行中',
+  completed: '已完成',
+};
+
+/** 提示等级：1=基础、2=标准、3=详细（契约 integer 1–3）。 */
+export const PROMPT_LEVEL_LABELS: Record<number, string> = {
+  1: '基础提示',
+  2: '标准提示',
+  3: '详细提示',
+};
+export const PROMPT_LEVEL_OPTIONS = [1, 2, 3].map((value) => ({
+  value,
+  label: PROMPT_LEVEL_LABELS[value],
+}));

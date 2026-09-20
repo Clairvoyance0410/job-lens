@@ -86,3 +86,8 @@ path = "/counselor/support/:id"
 feature = "support"
 export = "AssistancePage"
 role = "counselor"
+[[routes]]
+path = "/counselor/tasks/:id"
+feature = "training"
+export = "CounselorTaskPage"
+role = "counselor"
