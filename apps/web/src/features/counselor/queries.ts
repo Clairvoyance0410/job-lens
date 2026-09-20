@@ -89,3 +89,17 @@ export function useConfirmMatch(caseId: string) {
     },
   });
 }
+
+/** 个案能力报告：描述性训练记录（无能力评分，只读观测事实）。 */
+export function useRecords(caseId: string) {
+  return useQuery({
+    queryKey: ['case-records', caseId],
+    queryFn: async ({ signal }) =>
+      unwrap(
+        await api.GET('/cases/{case_id}/records', {
+          params: { path: { case_id: caseId } },
+          signal,
+        }),
+      ),
+  });
+}

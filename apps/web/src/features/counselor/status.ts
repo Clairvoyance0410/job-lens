@@ -23,3 +23,16 @@ export const CASE_FILTERS: { value: CaseFilter; label: string }[] = [
   { value: 'training', label: '训练中' },
   { value: 'awaiting_feedback', label: '待反馈' },
 ];
+
+export type TaskStatus = components['schemas']['TrainingRecord']['status'];
+
+/** 训练任务状态 → 中文，能力报告（训练记录）列表用。 */
+export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
+  not_started: '未开始',
+  in_progress: '进行中',
+  paused: '已暂停',
+  submitted: '已提交',
+  changes_requested: '需修改',
+  completed: '已完成',
+  cancelled: '已取消',
+};

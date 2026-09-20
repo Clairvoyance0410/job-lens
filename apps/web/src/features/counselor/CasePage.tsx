@@ -3,6 +3,7 @@ import { ApiError } from '@/shared/api/client';
 import { ErrorPanel, LoadingState } from '@/shared/ui/AsyncState';
 import { MatchEditor } from './MatchEditor';
 import { ProfileView } from './ProfileView';
+import { RecordsView } from './RecordsView';
 import { useCase, useCaseProfile } from './queries';
 import { DISPLAY_STATUS_LABELS } from './status';
 import styles from './counselor.module.css';
@@ -42,6 +43,7 @@ function CaseDetail({ caseId }: { caseId: string }) {
       </header>
       <ProfileView profile={profile.data} caseId={caseId} />
       <MatchEditor caseId={caseId} />
+      <RecordsView caseId={caseId} />
     </div>
   );
 }

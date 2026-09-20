@@ -6,6 +6,7 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, expect, it } from 'vitest';
 import { CounselorPage } from './public';
+import { RecordsView } from './RecordsView';
 
 const server = setupServer();
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -84,4 +85,42 @@ it('filters cases by display status on the cases tab', async () => {
   await userEvent.click(screen.getByRole('button', { name: '训练中' }));
   expect(screen.getByRole('link', { name: /个案 #22222222/ })).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: /个案 #11111111/ })).not.toBeInTheDocument();
+});
+
+function renderRecords() {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  render(
+    <QueryClientProvider client={client}>
+      <RecordsView caseId="case-1" />
+    </QueryClientProvider>,
+  );
+}
+
+it('shows descriptive training records in the ability report', async () => {
+  server.use(
+    http.get('*/api/v1/cases/case-1/records', () =>
+      HttpResponse.json({
+        items: [
+          {
+            task_id: 'task-1',
+            title: '收银流程训练',
+            status: 'completed',
+            attempts: 3,
+            hint_requests: 2,
+            assistance_requests: 1,
+            observed_elapsed_ms: 150000,
+            measurement_note: '完成度良好',
+          },
+        ],
+        next_cursor: null,
+        has_more: false,
+      }),
+    ),
+  );
+  renderRecords();
+  expect(await screen.findByRole('heading', { name: '能力报告' })).toBeInTheDocument();
+  expect(screen.getByText('收银流程训练')).toBeInTheDocument();
+  expect(screen.getByText('已完成')).toBeInTheDocument();
+  expect(screen.getByText(/尝试 3 次/)).toBeInTheDocument();
+  expect(screen.getByText('完成度良好')).toBeInTheDocument();
 });
