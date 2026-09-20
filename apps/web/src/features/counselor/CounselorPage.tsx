@@ -32,6 +32,9 @@ export function CounselorPage() {
         <Link to="/counselor/support" className={styles.navItem}>
           交流
         </Link>
+        <Link to="/counselor/notifications" className={styles.navItem}>
+          通知
+        </Link>
         <Link to="/profile" className={styles.navItem}>
           我的
         </Link>
