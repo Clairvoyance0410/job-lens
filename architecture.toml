@@ -76,3 +76,13 @@ path = "/counselor/submissions/:id"
 feature = "training"
 export = "FeedbackPage"
 role = "counselor"
+[[routes]]
+path = "/counselor/support"
+feature = "support"
+export = "CounselorSupportPage"
+role = "counselor"
+[[routes]]
+path = "/counselor/support/:id"
+feature = "support"
+export = "AssistancePage"
+role = "counselor"

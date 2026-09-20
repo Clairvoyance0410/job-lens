@@ -5,7 +5,7 @@ import styles from './counselor.module.css';
 
 type Tab = 'home' | 'cases';
 
-/** 底部一级导航：首页/个案同挂 /counselor（内部 tab 切换），交流 M3 接入，我的走公共 /profile。 */
+/** 底部一级导航：首页/个案同挂 /counselor（内部 tab 切换），交流走 /counselor/support，我的走公共 /profile。 */
 export function CounselorPage() {
   const [searchParams] = useSearchParams();
   const tab: Tab = searchParams.get('tab') === 'cases' ? 'cases' : 'home';
@@ -29,9 +29,9 @@ export function CounselorPage() {
         >
           个案
         </Link>
-        <span aria-disabled="true" className={styles.navItemDisabled} title="M3 阶段接入">
+        <Link to="/counselor/support" className={styles.navItem}>
           交流
-        </span>
+        </Link>
         <Link to="/profile" className={styles.navItem}>
           我的
         </Link>
