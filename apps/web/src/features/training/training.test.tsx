@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, expect, it } from 'vitest';
+import { AnnotationEditor } from './AnnotationEditor';
 import { FeedbackPage, CounselorTaskPage } from './public';
 
 const server = setupServer();
@@ -161,4 +162,62 @@ it('shows task progress and prompt-override control', async () => {
   // 说明为空时不可保存提示等级。
   expect(screen.getByRole('button', { name: '保存提示等级' })).toBeDisabled();
   expect(screen.getByRole('button', { name: '取消任务' })).toBeInTheDocument();
+});
+
+it('creates a guidance annotation from placed markers', async () => {
+  let posted: unknown;
+  server.use(
+    http.post('*/api/v1/tasks/task-1/annotations', async ({ request }) => {
+      posted = await request.json();
+      return HttpResponse.json(
+        {
+          id: 'ann-1',
+          task_id: 'task-1',
+          submission_id: 'sub-1',
+          asset_id: 'a-1',
+          author_id: 'c-1',
+          kind: 'guidance',
+          markers: [],
+          state: 'draft',
+          version: 1,
+        },
+        { status: 201 },
+      );
+    }),
+  );
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  render(
+    <QueryClientProvider client={client}>
+      <AnnotationEditor taskId="task-1" submissionId="sub-1" assetId="a-1" />
+    </QueryClientProvider>,
+  );
+
+  const surface = screen.getByRole('img', { name: '证据图片标注区' });
+  surface.getBoundingClientRect = () => ({
+    top: 0,
+    left: 0,
+    right: 200,
+    bottom: 100,
+    width: 200,
+    height: 100,
+    x: 0,
+    y: 0,
+    toJSON: () => ({}),
+  });
+  fireEvent.click(surface, { clientX: 50, clientY: 25 });
+
+  fireEvent.change(screen.getByLabelText('标注 1 说明'), {
+    target: { value: '这里要注意安全' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: '保存指引标注' }));
+
+  await waitFor(() => expect(posted).toBeDefined());
+  expect(posted).toMatchObject({
+    asset_id: 'a-1',
+    submission_id: 'sub-1',
+    kind: 'guidance',
+  });
+  const markers = (posted as { markers: { x: number; y: number; text: string; shape: string }[] }).markers;
+  expect(markers).toHaveLength(1);
+  expect(markers[0]).toMatchObject({ x: 0.25, y: 0.25, text: '这里要注意安全', shape: 'point' });
 });

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ApiError } from '@/shared/api/client';
 import { LoadingState } from '@/shared/ui/AsyncState';
 import type { components } from '@/shared/api/schema';
+import { AnnotationEditor } from './AnnotationEditor';
 import { OUTCOME_OPTIONS, TASK_STATUS_LABELS, TAG_OPTIONS } from './labels';
 import type { FeedbackTag } from './labels';
 import { useFeedback, useSnapshotRevision } from './queries';
@@ -23,6 +24,7 @@ export function FeedbackForm({ submission }: { submission: Submission }) {
   const [message, setMessage] = useState('');
   const [tags, setTags] = useState<FeedbackTag[]>([]);
   const [redo, setRedo] = useState<Set<string>>(new Set());
+  const [annotationIds, setAnnotationIds] = useState<string[]>([]);
 
   const busy = feedback.isPending;
 
@@ -43,6 +45,7 @@ export function FeedbackForm({ submission }: { submission: Submission }) {
   }
 
   const progressById = new Map(submission.snapshot.progress.map(p => [p.step_id, p.status]));
+  const evidenceIds = [...new Set(submission.snapshot.progress.flatMap(p => p.attachment_ids))];
 
   return (
     <div className={styles.page}>
@@ -94,6 +97,22 @@ export function FeedbackForm({ submission }: { submission: Submission }) {
           <p className={styles.note}>步骤内容暂不可用</p>
         )}
       </section>
+
+      {evidenceIds.length > 0 && (
+        <section className={styles.card} aria-label="指引标注">
+          <h3>指引标注</h3>
+          <p className={styles.note}>点击证据图片放置标注点，填写说明后保存；保存的标注会随本次审核反馈给学员。</p>
+          {evidenceIds.map(id => (
+            <AnnotationEditor
+              key={id}
+              taskId={submission.task_id}
+              submissionId={submission.id}
+              assetId={id}
+              onCreated={aid => setAnnotationIds(prev => [...prev, aid])}
+            />
+          ))}
+        </section>
+      )}
 
       <section className={styles.card} aria-labelledby="feedback-decision">
         <h3 id="feedback-decision">审核结论</h3>
@@ -156,7 +175,7 @@ export function FeedbackForm({ submission }: { submission: Submission }) {
                   message: message.trim(),
                   tags,
                   redo_step_ids: redoIds,
-                  annotation_ids: [], // 批注属后续里程碑，首版不关联
+                  annotation_ids: annotationIds,
                 },
               })
             }

@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api, confirmHeaders, unwrap, updateHeaders } from '@/shared/api/client';
+import { api, confirmHeaders, createHeaders, unwrap, updateHeaders } from '@/shared/api/client';
 import type { components } from '@/shared/api/schema';
 
 type FeedbackCreate = components['schemas']['FeedbackCreate'];
 type PromptOverrideWrite = components['schemas']['PromptOverrideWrite'];
+type AnnotationCreate = components['schemas']['AnnotationCreate'];
 
 /** 读取提交快照。父任务 version 经 ETag/task_version 投影，审核时用作 If-Match。 */
 export function useSubmission(submissionId: string) {
@@ -106,5 +107,18 @@ export function useCancelTask(taskId: string) {
       qc.invalidateQueries({ queryKey: ['cases'] });
       qc.invalidateQueries({ queryKey: ['dashboard'] });
     },
+  });
+}
+
+/** 创建指引标注草稿：POST + CSRF + 幂等键（write_headers，无 If-Match）。 */
+export function useCreateAnnotation(taskId: string) {
+  return useMutation({
+    mutationFn: async (body: AnnotationCreate) =>
+      unwrap(
+        await api.POST('/tasks/{task_id}/annotations', {
+          params: { path: { task_id: taskId }, header: createHeaders(crypto.randomUUID()) },
+          body,
+        }),
+      ),
   });
 }
