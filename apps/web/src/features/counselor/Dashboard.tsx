@@ -53,9 +53,7 @@ export function Dashboard() {
         <h3 id="tasks-title">今日任务</h3>
         <ul className={styles.taskList}>
           <li>
-            <Link to="/counselor?tab=cases">
-              整理待匹配个案 · {byStatus('pending_match')}
-            </Link>
+            <Link to="/counselor?tab=cases">整理待匹配个案 · {byStatus('pending_match')}</Link>
           </li>
           <li>
             <Link to="/counselor?tab=cases">制定 SOP · {byStatus('sop_pending')}</Link>

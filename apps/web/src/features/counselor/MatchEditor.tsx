@@ -92,7 +92,10 @@ export function MatchEditor({ caseId }: { caseId: string }) {
           type="button"
           disabled={confirmed || busy}
           onClick={() =>
-            save.mutate({ version: current.version, body: { direction, focus, cycle_weeks: cycleWeeks, basis } })
+            save.mutate({
+              version: current.version,
+              body: { direction, focus, cycle_weeks: cycleWeeks, basis },
+            })
           }
         >
           保存草稿

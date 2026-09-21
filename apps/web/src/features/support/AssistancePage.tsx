@@ -3,7 +3,12 @@ import { useParams } from 'react-router';
 import { ApiError } from '@/shared/api/client';
 import { ErrorPanel, LoadingState } from '@/shared/ui/AsyncState';
 import { ASSISTANCE_STATE_LABELS, MODE_LABELS } from './labels';
-import { useAssistance, useAssistanceAction, useAssistanceMessages, useSendMessage } from './queries';
+import {
+  useAssistance,
+  useAssistanceAction,
+  useAssistanceMessages,
+  useSendMessage,
+} from './queries';
 import styles from './support.module.css';
 
 type ThreadMessage = {
@@ -65,7 +70,7 @@ function AssistanceDetail({ requestId }: { requestId: string }) {
         <p className={styles.empty}>还没有消息</p>
       ) : (
         <ul className={styles.thread}>
-          {thread.map((m) => (
+          {thread.map(m => (
             <li key={m.id} className={styles.msg}>
               <span className={styles.msgMeta}>{new Date(m.created_at).toLocaleString()}</span>
               <p className={styles.msgBody}>{m.body}</p>
@@ -106,7 +111,7 @@ function AssistanceDetail({ requestId }: { requestId: string }) {
 
           <form
             className={styles.form}
-            onSubmit={(e) => {
+            onSubmit={e => {
               e.preventDefault();
               if (!draft.trim()) return;
               send.mutate(draft.trim(), { onSuccess: () => setDraft('') });
@@ -117,7 +122,7 @@ function AssistanceDetail({ requestId }: { requestId: string }) {
               value={draft}
               maxLength={2000}
               placeholder="输入回复…"
-              onChange={(e) => setDraft(e.target.value)}
+              onChange={e => setDraft(e.target.value)}
             />
             <button type="submit" disabled={busy || !draft.trim()}>
               发送

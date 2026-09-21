@@ -11,7 +11,12 @@ export function usePlans(caseId: string) {
   return useQuery({
     queryKey: ['sop-plans', caseId],
     queryFn: async ({ signal }) =>
-      unwrap(await api.GET('/cases/{case_id}/sop-plans', { params: { path: { case_id: caseId } }, signal })),
+      unwrap(
+        await api.GET('/cases/{case_id}/sop-plans', {
+          params: { path: { case_id: caseId } },
+          signal,
+        }),
+      ),
   });
 }
 

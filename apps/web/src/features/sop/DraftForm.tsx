@@ -90,7 +90,9 @@ export function DraftForm({ revision, caseId }: { revision: SopRevision; caseId:
         <button
           type="button"
           disabled={busy}
-          onClick={() => save.mutate({ version: revision.version, body: { goal, steps, reminder } })}
+          onClick={() =>
+            save.mutate({ version: revision.version, body: { goal, steps, reminder } })
+          }
         >
           保存草稿
         </button>

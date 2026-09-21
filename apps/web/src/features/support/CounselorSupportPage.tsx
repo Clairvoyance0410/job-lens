@@ -27,7 +27,7 @@ export function CounselorSupportPage() {
       </header>
 
       <div className={styles.filters}>
-        {FILTERS.map((f) => (
+        {FILTERS.map(f => (
           <button
             key={f.value}
             type="button"
@@ -55,7 +55,7 @@ function RequestList({ items }: { items: Assistance[] }) {
   if (items.length === 0) return <p className={styles.empty}>暂无求助</p>;
   return (
     <ul className={styles.list}>
-      {items.map((r) => (
+      {items.map(r => (
         <li key={r.id}>
           <Link to={`/counselor/support/${r.id}`} className={styles.card}>
             <div className={styles.cardHead}>

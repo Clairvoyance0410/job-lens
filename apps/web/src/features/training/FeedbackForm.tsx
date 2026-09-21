@@ -101,7 +101,9 @@ export function FeedbackForm({ submission }: { submission: Submission }) {
       {evidenceIds.length > 0 && (
         <section className={styles.card} aria-label="指引标注">
           <h3>指引标注</h3>
-          <p className={styles.note}>点击证据图片放置标注点，填写说明后保存；保存的标注会随本次审核反馈给学员。</p>
+          <p className={styles.note}>
+            点击证据图片放置标注点，填写说明后保存；保存的标注会随本次审核反馈给学员。
+          </p>
           {evidenceIds.map(id => (
             <AnnotationEditor
               key={id}

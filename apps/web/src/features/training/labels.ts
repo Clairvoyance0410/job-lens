@@ -50,7 +50,7 @@ export const PROMPT_LEVEL_LABELS: Record<number, string> = {
   2: '标准提示',
   3: '详细提示',
 };
-export const PROMPT_LEVEL_OPTIONS = [1, 2, 3].map((value) => ({
+export const PROMPT_LEVEL_OPTIONS = [1, 2, 3].map(value => ({
   value,
   label: PROMPT_LEVEL_LABELS[value],
 }));

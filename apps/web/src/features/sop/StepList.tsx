@@ -58,7 +58,11 @@ export function StepList({
           <div className={styles.stepHead}>
             <span className={styles.stepNo}>第 {idx + 1} 步</span>
             <div className={styles.stepTools}>
-              <button type="button" disabled={disabled || idx === 0} onClick={() => move(step.id, -1)}>
+              <button
+                type="button"
+                disabled={disabled || idx === 0}
+                onClick={() => move(step.id, -1)}
+              >
                 上移
               </button>
               <button

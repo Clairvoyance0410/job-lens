@@ -118,8 +118,22 @@ const task = {
   revision: {
     goal: '掌握收银流程',
     steps: [
-      { id: 'step-1', position: 1, instruction: '认识收银机', media_ids: [], estimated_seconds: 720, evidence_required: true },
-      { id: 'step-2', position: 2, instruction: '完成一次收款', media_ids: [], estimated_seconds: 900, evidence_required: true },
+      {
+        id: 'step-1',
+        position: 1,
+        instruction: '认识收银机',
+        media_ids: [],
+        estimated_seconds: 720,
+        evidence_required: true,
+      },
+      {
+        id: 'step-2',
+        position: 2,
+        instruction: '完成一次收款',
+        media_ids: [],
+        estimated_seconds: 900,
+        evidence_required: true,
+      },
     ],
     reminder: { speech_enabled: true, vibration_enabled: false, prompt_level: 2 },
     id: 'rev-1',
@@ -217,7 +231,8 @@ it('creates a guidance annotation from placed markers', async () => {
     submission_id: 'sub-1',
     kind: 'guidance',
   });
-  const markers = (posted as { markers: { x: number; y: number; text: string; shape: string }[] }).markers;
+  const markers = (posted as { markers: { x: number; y: number; text: string; shape: string }[] })
+    .markers;
   expect(markers).toHaveLength(1);
   expect(markers[0]).toMatchObject({ x: 0.25, y: 0.25, text: '这里要注意安全', shape: 'point' });
 });

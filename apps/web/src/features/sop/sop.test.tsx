@@ -101,7 +101,12 @@ it('offers to start a new draft when only a published revision exists', async ()
       }),
     ),
     http.get('*/api/v1/sop-revisions/pub-1', () =>
-      HttpResponse.json({ ...draftRevision, id: 'pub-1', state: 'published', published_at: '2026-09-19T10:00:00Z' }),
+      HttpResponse.json({
+        ...draftRevision,
+        id: 'pub-1',
+        state: 'published',
+        published_at: '2026-09-19T10:00:00Z',
+      }),
     ),
   );
   renderPage();

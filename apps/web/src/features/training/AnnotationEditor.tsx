@@ -55,7 +55,12 @@ export function AnnotationEditor({
             shape: 'point' as const,
           })),
       },
-      { onSuccess: created => { setMarkers([]); onCreated?.(created.id); } },
+      {
+        onSuccess: created => {
+          setMarkers([]);
+          onCreated?.(created.id);
+        },
+      },
     );
   }
 
@@ -68,7 +73,11 @@ export function AnnotationEditor({
         aria-label="证据图片标注区"
         onClick={place}
       >
-        <img className={styles.surfaceImg} src={`/api/v1/files/${assetId}/content`} alt="证据图片" />
+        <img
+          className={styles.surfaceImg}
+          src={`/api/v1/files/${assetId}/content`}
+          alt="证据图片"
+        />
         {markers.map((m, i) => (
           <span
             key={i}
@@ -103,7 +112,9 @@ export function AnnotationEditor({
         </button>
       </div>
       {create.isError && (
-        <p role="alert" className={styles.error}>保存标注失败，请重试</p>
+        <p role="alert" className={styles.error}>
+          保存标注失败，请重试
+        </p>
       )}
     </div>
   );

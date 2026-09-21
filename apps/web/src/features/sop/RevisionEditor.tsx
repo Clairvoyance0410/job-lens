@@ -32,7 +32,8 @@ export function RevisionEditor({
     <section aria-labelledby="sop-published" className={styles.card}>
       <h3 id="sop-published">已发布 · 第 {rev.revision_no} 版</h3>
       <p className={styles.note}>
-        发布于 {rev.published_at ? new Date(rev.published_at).toLocaleString('zh-CN') : '—'}，内容已冻结。
+        发布于 {rev.published_at ? new Date(rev.published_at).toLocaleString('zh-CN') : '—'}
+        ，内容已冻结。
       </p>
       <div className={styles.field}>
         <label>总目标</label>

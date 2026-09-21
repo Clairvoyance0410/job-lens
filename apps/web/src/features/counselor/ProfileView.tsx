@@ -20,7 +20,9 @@ export function ProfileView({ profile, caseId }: { profile: CaseProfile; caseId:
         </div>
         <div className={styles.profileRow}>
           <dt>感官偏好</dt>
-          <dd>{profile.sensory_preferences.length ? profile.sensory_preferences.join('、') : '未填写'}</dd>
+          <dd>
+            {profile.sensory_preferences.length ? profile.sensory_preferences.join('、') : '未填写'}
+          </dd>
         </div>
         <div className={styles.profileRow}>
           <dt>沟通方式</dt>

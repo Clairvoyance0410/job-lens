@@ -12,7 +12,9 @@ export function CounselorNotificationsPage() {
   if (notifications.isPending) return <LoadingState />;
   if (notifications.isError) {
     if (notifications.error instanceof ApiError && notifications.error.status === 410)
-      return <ErrorPanel message="通知记录已过期，请刷新" retry={() => void notifications.refetch()} />;
+      return (
+        <ErrorPanel message="通知记录已过期，请刷新" retry={() => void notifications.refetch()} />
+      );
     return <ErrorPanel message="通知暂不可用" retry={() => void notifications.refetch()} />;
   }
   const items = notifications.data?.items ?? [];
@@ -51,7 +53,9 @@ export function CounselorNotificationsPage() {
       )}
 
       {markRead.isError && (
-        <p role="alert" className={styles.error}>操作失败，请重试</p>
+        <p role="alert" className={styles.error}>
+          操作失败，请重试
+        </p>
       )}
     </section>
   );

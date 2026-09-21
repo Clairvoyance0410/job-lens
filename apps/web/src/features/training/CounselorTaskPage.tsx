@@ -2,11 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useParams } from 'react-router';
 import { ApiError } from '@/shared/api/client';
 import { ErrorPanel, LoadingState } from '@/shared/ui/AsyncState';
-import {
-  PROMPT_LEVEL_OPTIONS,
-  STEP_STATUS_LABELS,
-  TASK_STATUS_LABELS,
-} from './labels';
+import { PROMPT_LEVEL_OPTIONS, STEP_STATUS_LABELS, TASK_STATUS_LABELS } from './labels';
 import { useCancelTask, usePromptOverride, useTask } from './queries';
 import styles from './training.module.css';
 
@@ -29,7 +25,7 @@ function TaskDetail({ taskId }: { taskId: string }) {
   if (!t) return null;
 
   const final = t.status === 'completed' || t.status === 'cancelled';
-  const progressByStep = new Map(t.progress.map((p) => [p.step_id, p.status]));
+  const progressByStep = new Map(t.progress.map(p => [p.step_id, p.status]));
 
   return (
     <section className={styles.page}>
@@ -59,7 +55,7 @@ function TaskDetail({ taskId }: { taskId: string }) {
             <div className={styles.metaRow}>
               <dt>当前提示等级</dt>
               <dd>
-                {PROMPT_LEVEL_OPTIONS.find((o) => o.value === t.prompt_override!.prompt_level)
+                {PROMPT_LEVEL_OPTIONS.find(o => o.value === t.prompt_override!.prompt_level)
                   ?.label ?? t.prompt_override!.prompt_level}
               </dd>
             </div>
@@ -70,7 +66,7 @@ function TaskDetail({ taskId }: { taskId: string }) {
       <div className={styles.card}>
         <h3>步骤进度</h3>
         <ul className={styles.stepReviewList}>
-          {t.revision.steps.map((s) => (
+          {t.revision.steps.map(s => (
             <li key={s.id} className={styles.stepReviewRow}>
               <span className={styles.stepNo}>{s.position}</span>
               <span className={styles.stepText}>{s.instruction}</span>
@@ -82,7 +78,9 @@ function TaskDetail({ taskId }: { taskId: string }) {
         </ul>
       </div>
 
-      {!final && <PromptOverrideCard taskId={taskId} version={t.version} current={t.prompt_override} />}
+      {!final && (
+        <PromptOverrideCard taskId={taskId} version={t.version} current={t.prompt_override} />
+      )}
       {!final && <CancelCard taskId={taskId} version={t.version} />}
     </section>
   );
@@ -116,7 +114,7 @@ function PromptOverrideCard({
       <form onSubmit={submit}>
         <fieldset className={styles.fieldset}>
           <legend>提示等级</legend>
-          {PROMPT_LEVEL_OPTIONS.map((o) => (
+          {PROMPT_LEVEL_OPTIONS.map(o => (
             <label key={o.value} className={styles.radio}>
               <input
                 type="radio"
@@ -137,7 +135,7 @@ function PromptOverrideCard({
             maxLength={500}
             rows={2}
             placeholder="说明调整原因（必填，1–500 字）"
-            onChange={(e) => setReason(e.target.value)}
+            onChange={e => setReason(e.target.value)}
           />
         </div>
         <button type="submit" disabled={override.isPending || !reason.trim()}>
@@ -175,7 +173,7 @@ function CancelCard({ taskId, version }: { taskId: string; version: number }) {
     <div className={styles.card}>
       <h3>取消任务</h3>
       <form
-        onSubmit={(e) => {
+        onSubmit={e => {
           e.preventDefault();
           if (reason.trim()) cancel.mutate({ version, reason: reason.trim() });
         }}
@@ -187,7 +185,7 @@ function CancelCard({ taskId, version }: { taskId: string; version: number }) {
             value={reason}
             maxLength={500}
             rows={2}
-            onChange={(e) => setReason(e.target.value)}
+            onChange={e => setReason(e.target.value)}
           />
         </div>
         <div className={styles.actions}>
